@@ -1,0 +1,52 @@
+---
+- name: "Update all package"
+  apt: update_cache=yes cache_valid_time=3600
+
+- name: "Install system updates"
+  apt: upgrade=safe
+
+- name: "Install apt packages"
+  apt:
+    name:
+      - git
+      - tmux
+      - tree
+      - vagrant
+      - virtualbox
+    state: latest
+
+- name: "Does the Google apt file exist?"
+  stat:
+    path: "/etc/apt/sources.list.d/google-chrome.list"
+  register: google_apt_list
+
+- name: "Add Google Chrome key"
+  shell: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+  when: not google_apt_list.stat.exists
+
+- name: "Add Google Chrome repo"
+  copy: content="deb http://dl.google.com/linux/chrome/deb/ stable main" dest= owner=root group=root mode=644
+  when: not google_apt_list.stat.exists
+
+- name: "Does the Vscode apt file exist?"
+  stat:
+    path: "/etc/apt/sources.list.d/vscode.list"
+  register: vscode_apt_list
+
+- name: "Add Vscode key"
+  apt_key:
+    url: 'https://packages.microsoft.com/keys/microsoft.asc'
+    state: present
+  when: not vscode_apt_list.stat.exists
+
+- name: "Install Vscode repo"
+  apt_repository:
+    repo: 'deb [arch=amd64] https://packages.microsoft.com/repos/code stable main'
+  when: not vscode_apt_list.stat.exists
+
+- name: "Install desktop application"
+  apt:
+    name:
+      - google-chrome-stable
+      - code
+    state: latest

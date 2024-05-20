@@ -1,0 +1,24 @@
+---
+- name: "Does the Google apt file exist?"
+  stat:
+    path: "/etc/apt/sources.list.d/google-chrome.list"
+  register: google_apt_list
+
+- name: "Add Google Chrome key"
+  ansible.builtin.apt_key:
+    url: "https://dl-ssl.google.com/linux/linux_signing_key.pub"
+    state: present
+  when: not google_apt_list.stat.exists
+
+- name: "Add Google Chrome repo"
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+    state: present
+    filename: google-chrome
+  when: not google_apt_list.stat.exists
+
+- name: "Install desktop application"
+  apt:
+    name:
+      - google-chrome-stable
+    state: latest

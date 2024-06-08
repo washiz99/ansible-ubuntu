@@ -18,6 +18,7 @@
   when: not google_apt_list.stat.exists
 
 - name: "Install desktop application"
+  become: yes
   apt:
     name:
       - google-chrome-stable

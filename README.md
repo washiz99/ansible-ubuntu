@@ -15,11 +15,11 @@ Replace {user} with your username.
 ```text
 # Allow members of group sudo to execute any command
 %sudo   ALL=(ALL:ALL) ALL
-{user}   ALL=NOPASSWD: /usr/bin/ansible-playbook
+{user}  ALL=(ALL:ALL) NOPASSWD: /usr/bin/ansible-playbook
 ```
 
 ## Run playbook
 
 ```bash
-ansible-playbook -i hosts site.yml
+ansible-playbook -i hosts.yml site.yml
 ```

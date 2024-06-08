@@ -40,3 +40,18 @@
     changed_when: yes
 
   when: docker_version.rc != 0
+
+- name: check docker-compose
+  command: docker-compose --version
+  register: docker_compose_version
+  ignore_errors: true
+
+- block:
+  - name: install docker-compose
+    become: yes
+    get_url:
+      url: "https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+      dest: /usr/local/bin/docker-compose
+      mode: +x
+
+  when: docker_compose_version.rc != 0

@@ -1,7 +1,12 @@
 ---
-- hosts: localhost
-  connection: local
-  gather_facts: no
+- name: start
+  hosts: localhost
+  gather_facts: true
+
+- name: install package
+  hosts: localhost
+  become: yes
+  gather_facts: false
   roles:
     - install-packages
     - install-docker

@@ -1,0 +1,13 @@
+---
+- name: add_user_to_docker_group
+  become: yes
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: yes
+
+- name: restart_docker_daemon
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: true

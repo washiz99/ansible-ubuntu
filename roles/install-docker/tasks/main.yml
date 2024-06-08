@@ -1,0 +1,42 @@
+---
+- name: check docker
+  command: docker --version
+  register: docker_version
+  ignore_errors: true
+
+- block:
+  - name: install package for docker
+    become: yes
+    apt:
+      name:
+        - ca-certificates
+        - curl
+      state: present
+
+  - name: add GPG key on docker repository
+    become: yes
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: add docker repository
+    become: yes
+    apt_repository:
+      repo: deb [arm=amd64] https://download.docker.com/linux/ubuntu focal stable
+      state: present
+
+  - name: apt update
+    become: yes
+    apt:
+      update_cache: yes
+
+  - name: install docker
+    become: yes
+    apt:
+      name: docker-ce
+    notify:
+      - add_user_to_docker_group
+      - restart_docker_daemon
+    changed_when: yes
+
+  when: docker_version.rc != 0
